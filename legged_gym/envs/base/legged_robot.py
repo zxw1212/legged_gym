@@ -491,6 +491,12 @@ class LeggedRobot(BaseTask):
 
         # create some wrapper tensors for different slices
         self.root_states = gymtorch.wrap_tensor(actor_root_state)
+        # 索引范围	数据含义
+        # 0:3	位置 (x, y, z)
+        # 3:7	旋转 (四元数 w, x, y, z)
+        # 7:10	线速度 (vx, vy, vz)
+        # 10:13	角速度 (wx, wy, wz)
+        
         self.dof_state = gymtorch.wrap_tensor(dof_state_tensor)
         self.dof_pos = self.dof_state.view(self.num_envs, self.num_dof, 2)[..., 0]
         self.dof_vel = self.dof_state.view(self.num_envs, self.num_dof, 2)[..., 1]

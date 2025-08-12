@@ -33,17 +33,27 @@ from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobot
 class CassieRoughCfg( LeggedRobotCfg ):
     class env( LeggedRobotCfg.env):
         num_envs = 4096
-        num_observations = 169
-        num_actions = 12
+        num_observations = 172 # raw: 169, 加了一个iiwa joint1后, obs的joint posi vel, action尺寸各加1
+        # num_observations = 185 # 172+13: 再加ee state to observation: position (3), rotation (4), linear vel (3), angular vel (3)
+        num_actions = 13 # 加了一个iiwa joint1后, action的尺寸加1
 
     
     class terrain( LeggedRobotCfg.terrain):
         measured_points_x = [-0.5, -0.4, -0.3, -0.2, -0.1, 0., 0.1, 0.2, 0.3, 0.4, 0.5] # 1mx1m rectangle (without center line)
         measured_points_y = [-0.5, -0.4, -0.3, -0.2, -0.1, 0., 0.1, 0.2, 0.3, 0.4, 0.5]
 
+    # class commands( LeggedRobotCfg.commands ):
+    #     heading_command = True
+    #     class ranges( LeggedRobotCfg.commands.ranges ):
+    #         lin_vel_x = [0.5, 0.5] # min max [m/s]
+    #         lin_vel_y = [0.0, 0.0]   # min max [m/s]
+    #         heading = [0.0, 0.0]
+
     class init_state( LeggedRobotCfg.init_state ):
         pos = [0.0, 0.0, 1.] # x,y,z [m]
         default_joint_angles = { # = target angles [rad] when action = 0.0
+            'iiwa_joint1' : 0.,
+
             'hip_abduction_left': 0.1,
             'hip_rotation_left': 0.,
             'hip_flexion_left': 1.,
@@ -61,10 +71,12 @@ class CassieRoughCfg( LeggedRobotCfg ):
 
     class control( LeggedRobotCfg.control ):
         # PD Drive parameters:
-        stiffness = {   'hip_abduction': 100.0, 'hip_rotation': 100.0,
+        stiffness = {   'iiwa_joint1': 10.0,
+                        'hip_abduction': 100.0, 'hip_rotation': 100.0,
                         'hip_flexion': 200., 'thigh_joint': 200., 'ankle_joint': 200.,
                         'toe_joint': 40.}  # [N*m/rad]
-        damping = { 'hip_abduction': 3.0, 'hip_rotation': 3.0,
+        damping = { 'iiwa_joint1': 1.,
+                    'hip_abduction': 3.0, 'hip_rotation': 3.0,
                     'hip_flexion': 6., 'thigh_joint': 6., 'ankle_joint': 6.,
                     'toe_joint': 1.}  # [N*m*s/rad]     # [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
@@ -89,6 +101,7 @@ class CassieRoughCfg( LeggedRobotCfg ):
         class scales( LeggedRobotCfg.rewards.scales ):
             termination = -200.
             tracking_ang_vel = 1.0
+            ee_heading = 2.0
             torques = -5.e-6
             dof_acc = -2.e-7
             lin_vel_z = -0.5

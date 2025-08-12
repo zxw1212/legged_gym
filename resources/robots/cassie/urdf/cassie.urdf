@@ -7,6 +7,36 @@
       <inertia ixx=".00001" ixy="0." ixz=".015" iyy=".00001" iyz=".0" izz=".00001"/>
     </inertial>
   </link>
+
+  <link name="iiwa_link1">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/iiwa_link1.STL" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin
+        xyz="-4.78790441849064E-07 -0.0348192058752328 -0.0692021315991948"
+        rpy="0 0 0" />
+      <mass
+        value="0.1627406257303" />
+      <inertia
+        ixx="0.133321610552378"
+        ixy="-5.3830316300325E-07"
+        ixz="9.16989471201082E-07"
+        iyy="0.127213841326705"
+        iyz="0.0236704924620788"
+        izz="0.047155320135412" />
+    </inertial>
+  </link>
+  <joint name="iiwa_joint1" type="revolute">
+      <origin rpy="0 0 0" xyz="0 0 0.333"/>
+      <parent link="base"/>
+      <child link="iiwa_link1"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="10" lower="-2.9671" upper="2.9671" velocity="2.1750"/>
+  </joint>
+
   <link name="pelvis">
     <!-- <inertial>
       <origin rpy="0 0 0" xyz=".0507 0 .0284"/>
