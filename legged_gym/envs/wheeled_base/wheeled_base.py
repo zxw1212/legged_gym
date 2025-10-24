@@ -195,10 +195,6 @@ class WheeledBase(LeggedRobot):
         self.render()
         for _ in range(self.cfg.control.decimation):
             self.torques = self._compute_torques(full_joint_actions).view(self.torques.shape)
-            # const torque(10.0) for test
-            # self.torques = 10.0 * torch.ones_like(self.torques)
-            # print(self.dof_names)
-            # print( self.torques )
             self.gym.set_dof_actuation_force_tensor(self.sim, gymtorch.unwrap_tensor(self.torques))
             self.gym.simulate(self.sim)
             if self.device == 'cpu':
@@ -212,3 +208,23 @@ class WheeledBase(LeggedRobot):
         if self.privileged_obs_buf is not None:
             self.privileged_obs_buf = torch.clip(self.privileged_obs_buf, -clip_obs, clip_obs)
         return self.obs_buf, self.privileged_obs_buf, self.rew_buf, self.reset_buf, self.extras
+
+    def _reward_no_fly(self):
+        """
+        base lin vel z shoule not exceed threshold, return z vel > threshold
+        """
+        z_vel_threshold = 2.0  # m/s
+        z_vel = self.base_lin_vel[:, 2]
+        z_vel_exceed = (z_vel > z_vel_threshold) * 1.0
+        return z_vel_exceed
+    
+    def check_termination(self):
+        """ Check if environments need to be reset
+        """
+        self.reset_buf = torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1)
+        self.time_out_buf = self.episode_length_buf > self.max_episode_length # no terminal reward for time-outs
+        self.reset_buf |= self.time_out_buf
+        # ============================= addeded ==============================
+        base_posi_z = self.root_states[:, 2]
+        bot_fly = base_posi_z > 0.5
+        self.reset_buf |= bot_fly

@@ -8,6 +8,7 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
         num_envs = 4096
         num_observations = 17 # 3(base lin vel, 3 base ang vel, 3 command xy yaw vel, 4 wheel vel, 4 previous actions)
         num_actions = 4
+        # episode_length_s = 0.5 # for init pos debug
 
     class terrain( LeggedRobotCfg.terrain):
         """
@@ -18,15 +19,17 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
         curriculum = False
     
     class commands( LeggedRobotCfg.commands ):
-        heading_command = False
+        heading_command = True
         class ranges( LeggedRobotCfg.commands.ranges ):
-            lin_vel_x = [0.0, 0.0] # min max [m/s]
-            lin_vel_y = [0.0, 0.0]   # min max [m/s]
+            # lin_vel_x = [-1.0, 1.0] # min max [m/s]
+            # lin_vel_y = [-1.0, 1.0]   # min max [m/s]
+            lin_vel_x = [0.5, 0.5] # min max [m/s]
+            lin_vel_y = [0.5, 0.5]   # min max [m/s]
             heading = [0.0, 0.0]
 
 
     class init_state( LeggedRobotCfg.init_state ):
-        pos = [0.0, 0.0, 0.3]
+        pos = [0.0, 0.0, 0.1]
         default_joint_angles = {
             # Wheels
             'wheel_RF_Joint': 0.0,
@@ -132,15 +135,15 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
             'roller_Joint': 0.0,
         }
         damping = {
-            'wheel_RF_Joint': 0.001,
-            'wheel_LF_Joint': 0.001,
-            'wheel_RR_Joint': 0.001,
-            'wheel_LR_Joint': 0.001,
+            'wheel_RF_Joint': 0.0,
+            'wheel_LF_Joint': 0.0,
+            'wheel_RR_Joint': 0.0,
+            'wheel_LR_Joint': 0.0,
 
             'roller_Joint': 0.0,
         }
         # action scale: target velocity = actionScale * action
-        action_scale = 1.0
+        action_scale = 10.0
         decimation = 10
 
     class asset( LeggedRobotCfg.asset ):
@@ -151,7 +154,8 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
         terminate_after_contacts_on = ['astribot_torso_base']
         flip_visual_attachments = False
         replace_cylinder_with_capsule = False
-        self_collisions = 0
+        self_collisions = 1 # 0 to enable filtering, 1 to disable filtering
+        armature = 0.01
 
     class rewards( LeggedRobotCfg.rewards ):
         soft_dof_pos_limit = 0.9
@@ -164,14 +168,15 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
             termination = -200.
             tracking_lin_vel = 1.0
             tracking_ang_vel = 0.5
-            torques = -5.e-6
-            dof_acc = -2.e-8
-            lin_vel_z = -0.1
-            ang_vel_xy = -0.05
+            torques = -2.e-7
+            dof_acc = -1.e-9
+            lin_vel_z = -0.08
+            ang_vel_xy = -0.02
             feet_air_time = 0.0
             dof_pos_limits = -1.
             dof_vel = -0.0
             feet_contact_forces = -0.
+            no_fly = -10.0
     
     class sim:
         dt =  0.002

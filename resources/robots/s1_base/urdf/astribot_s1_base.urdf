@@ -28,13 +28,12 @@
         <color rgba="0.79216 0.81961 0.93333 1"/>
       </material>
     </visual>
-    <!-- 可能因为轮子collision太多了,导致base的外力计算总是出错, 先注释掉 -->
-    <!-- <collision>
+    <collision>
       <origin rpy="0 0 0" xyz="0 0 0.07"/>
       <geometry>
         <cylinder length="0.18" radius="0.27"/>
       </geometry>
-    </collision> -->
+    </collision>
   </link>
   <link name="wheel_RF_Link">
     <inertial>
@@ -57,7 +56,7 @@
     <parent link="astribot_torso_base"/>
     <child link="wheel_RF_Link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="300" lower="-3.14159" upper="3.14159" velocity="100"/>
+    <limit effort="50" lower="-3.14159" upper="3.14159" velocity="100"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- ===== Roller Pair 1 ===== -->
@@ -631,7 +630,7 @@
     <parent link="astribot_torso_base"/>
     <child link="wheel_LF_Link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="300" lower="-3.14159" upper="3.14159" velocity="100"/>
+    <limit effort="50" lower="-3.14159" upper="3.14159" velocity="100"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- ===== Roller Pair 1 ===== -->
@@ -1207,7 +1206,7 @@
     <parent link="astribot_torso_base"/>
     <child link="wheel_RR_Link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="300" lower="-3.14159" upper="3.14159" velocity="100"/>
+    <limit effort="50" lower="-3.14159" upper="3.14159" velocity="100"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- ===== Roller Pair 1 ===== -->
@@ -1781,7 +1780,7 @@
     <parent link="astribot_torso_base"/>
     <child link="wheel_LR_Link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="300" lower="-3.14159" upper="3.14159" velocity="100"/>
+    <limit effort="50" lower="-3.14159" upper="3.14159" velocity="100"/>
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
   <!-- ===== Roller Pair 1 ===== -->
