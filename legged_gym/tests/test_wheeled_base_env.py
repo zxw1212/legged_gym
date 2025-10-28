@@ -43,15 +43,19 @@ def test_env(args):
     args.task = "wheeled_base"
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
     # override some parameters for testing
-    env_cfg.env.num_envs =  min(env_cfg.env.num_envs, 1024)
+    env_cfg.env.num_envs =  min(env_cfg.env.num_envs, 200)
 
     # prepare environment
     env, _ = task_registry.make_env(name=args.task, args=args, env_cfg=env_cfg)
+
+    # reset env
+    obs = env.reset()
+
     for i in range(int(1000*env.max_episode_length)):
         # const actions for wheel bot to moveing test
         action_scale = env_cfg.control.action_scale
-        # actions = (torch.tensor([[10.0, 0.0, 0.0, -10.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
-        actions = (torch.tensor([[10.0, 10.0, 10.0, 10.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
+        actions = (torch.tensor([[-20.0, 0.0, 0.0, 20.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
+        # actions = (torch.tensor([[10.0, 10.0, 10.0, 10.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
         # actions = 0.*torch.ones(env.num_envs, env.num_actions, device=env.device)
         # actions = torch.randn(env.num_envs, env.num_actions, device=env.device) * 1000.0  #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
         obs, _, rew, done, info = env.step(actions)

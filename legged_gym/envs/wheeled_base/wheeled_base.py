@@ -128,6 +128,7 @@ class WheeledBase(LeggedRobot):
             self.torque_limits = torch.zeros(self.num_dof, dtype=torch.float, device=self.device, requires_grad=False)
 
             #========================== addeded ==============================
+            # TODO: set dof properties from cfg
             props["lower"] = np.clip(props["lower"], -1e6, 1e6) # avoid upper-lower gettingg inf, inf*gain=nan
             props["upper"] = np.clip(props["upper"], -1e6, 1e6)
             props["velocity"] = np.clip(props["velocity"], -1e6, 1e6)
@@ -151,6 +152,21 @@ class WheeledBase(LeggedRobot):
             # print("dof props:", type(props), props) # ndarray
             # print("props dtype:", props.dtype)## 'hasLimits', 'lower', 'upper', 'driveMode', 'velocity', 'effort', 'stiffness', 'damping', 'friction', 'armature'
             # print("dof pos lower limits:", props["lower"])
+        return props
+    
+    def _process_rigid_shape_props(self, props, env_id):
+        props = super()._process_rigid_shape_props(props, env_id)
+        
+        # body num != rigid shape num because some bodies have multiple collision shapes, some have none
+        if env_id==0:
+            self.roller_and_base_shape_indices_to_modify = []
+            for i in range(len(self.shape_indices_per_body)):
+                print(f"Body {i} name:{self.body_names[i]} has shape indices from: {self.shape_indices_per_body[i].start},  count: {self.shape_indices_per_body[i].count}")
+                if self.shape_indices_per_body[i].count != 0 and ("roller_link" in self.body_names[i] or "astribot_torso_base" in self.body_names[i]):
+                    # enable collision filter for roller links
+                    for j in range(self.shape_indices_per_body[i].start, self.shape_indices_per_body[i].start + self.shape_indices_per_body[i].count):
+                        self.roller_and_base_shape_indices_to_modify.append(j)
+
         return props
 
     
@@ -213,7 +229,7 @@ class WheeledBase(LeggedRobot):
         """
         base lin vel z shoule not exceed threshold, return z vel > threshold
         """
-        z_vel_threshold = 2.0  # m/s
+        z_vel_threshold = 5.0  # m/s
         z_vel = self.base_lin_vel[:, 2]
         z_vel_exceed = (z_vel > z_vel_threshold) * 1.0
         return z_vel_exceed
@@ -221,6 +237,9 @@ class WheeledBase(LeggedRobot):
     def check_termination(self):
         """ Check if environments need to be reset
         """
+        # print("force:", self.contact_forces[:, self.termination_contact_indices, :])
+        # print("force:", self.contact_forces)
+
         self.reset_buf = torch.any(torch.norm(self.contact_forces[:, self.termination_contact_indices, :], dim=-1) > 1., dim=1)
         self.time_out_buf = self.episode_length_buf > self.max_episode_length # no terminal reward for time-outs
         self.reset_buf |= self.time_out_buf

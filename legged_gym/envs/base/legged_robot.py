@@ -652,9 +652,14 @@ class LeggedRobot(BaseTask):
         self.num_bodies = self.gym.get_asset_rigid_body_count(robot_asset)
         dof_props_asset = self.gym.get_asset_dof_properties(robot_asset)
         rigid_shape_props_asset = self.gym.get_asset_rigid_shape_properties(robot_asset)
+        self.rigid_shape_props_asset = rigid_shape_props_asset.copy()
+
+        self.shape_indices_per_body = self.gym.get_asset_rigid_body_shape_indices(robot_asset)
 
         # save body names from the asset
         body_names = self.gym.get_asset_rigid_body_names(robot_asset)
+        self.body_names = body_names.copy()
+
         self.dof_names = self.gym.get_asset_dof_names(robot_asset)
         self.num_bodies = len(body_names)
         self.num_dofs = len(self.dof_names)
@@ -686,6 +691,14 @@ class LeggedRobot(BaseTask):
             rigid_shape_props = self._process_rigid_shape_props(rigid_shape_props_asset, i)
             self.gym.set_asset_rigid_shape_properties(robot_asset, rigid_shape_props)
             actor_handle = self.gym.create_actor(env_handle, robot_asset, start_pose, self.cfg.asset.name, i, self.cfg.asset.self_collisions, 0)
+
+            # modify rollers rigid shape properties is needed
+            if hasattr(self, 'roller_and_base_shape_indices_to_modify'):
+                actor_props = self.gym.get_actor_rigid_shape_properties(env_handle, actor_handle)
+                for j in self.roller_and_base_shape_indices_to_modify:
+                    actor_props[j].filter = 1
+                self.gym.set_actor_rigid_shape_properties(env_handle, actor_handle, actor_props)
+
             dof_props = self._process_dof_props(dof_props_asset, i)
             self.gym.set_actor_dof_properties(env_handle, actor_handle, dof_props)
             body_props = self.gym.get_actor_rigid_body_properties(env_handle, actor_handle)
