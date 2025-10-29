@@ -5,43 +5,46 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
     Configuration for WheeledBase bot(4 wheels, 10 roller on each wheel) on flat ground.
     """
     class env( LeggedRobotCfg.env):
-        num_envs = 4096
+        num_envs = 2048
         num_observations = 17 # 3(base lin vel, 3 base ang vel, 3 command xy yaw vel, 4 wheel vel, 4 previous actions)
         num_actions = 4
         # episode_length_s = 0.5 # for init pos debug
 
-    class terrain( LeggedRobotCfg.terrain):
-        """
-        Configuration of flat terrain.
-        """
-        mesh_type = 'plane' #'trimesh' 'plane'
-        measure_heights = False
-        curriculum = False
     # class terrain( LeggedRobotCfg.terrain):
-    #     mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
-    #     curriculum = True
-    #     border_size = 5.0
-    #     static_friction = 1.0
-    #     dynamic_friction = 1.0
-    #     restitution = 0.
-    #     max_init_terrain_level = 2 # starting curriculum state
-    #     terrain_length = 8.
-    #     terrain_width = 8.
-    #     num_rows= 3 # number of terrain rows (levels)
-    #     num_cols = 8 # number of terrain cols (types)
-    #     # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
-    #     # terrain_proportions = [0.6, 0.4, 0.0, 0.0, 0.0]
-    #     terrain_proportions = [1.0, 0.0, 0.0, 0.0, 0.0]
-    #     # trimesh only:
-    #     slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
+    #     """
+    #     Configuration of flat terrain.
+    #     """
+    #     mesh_type = 'plane' #'trimesh' 'plane'
+    #     measure_heights = False
+    #     curriculum = False
+
+    class terrain( LeggedRobotCfg.terrain):
+        mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
+        curriculum = True
+        border_size = 25
+        static_friction = 1.0
+        dynamic_friction = 1.0
+        restitution = 0.
+        max_init_terrain_level = 1 # starting curriculum state
+        terrain_length = 8.
+        terrain_width = 8.
+        num_rows= 2 # number of terrain rows (levels)
+        num_cols = 3 # number of terrain cols (types)
+        # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
+        # terrain_proportions = [0.6, 0.4, 0.0, 0.0, 0.0]
+        terrain_proportions = [1.0, 0.0, 0.0, 0.0, 0.0]
+        # trimesh only:
+        slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
     
     class commands( LeggedRobotCfg.commands ):
         heading_command = True
         class ranges( LeggedRobotCfg.commands.ranges ):
             # lin_vel_x = [-1.0, 1.0] # min max [m/s]
             # lin_vel_y = [-1.0, 1.0]   # min max [m/s]
-            lin_vel_x = [0.5, 0.5] # min max [m/s]
-            lin_vel_y = [0.5, 0.5]   # min max [m/s]
+            # lin_vel_x = [0.5, 0.5] # min max [m/s]
+            # lin_vel_y = [0.5, 0.5]   # min max [m/s]
+            lin_vel_x = [1.0, 1.0] # min max [m/s]
+            lin_vel_y = [0.0, 0.0]   # min max [m/s]
             heading = [0.0, 0.0]
 
 
@@ -145,10 +148,10 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
 
         # PD Drive parameters:
         stiffness = {
-            'wheel_RF_Joint': 1.0,
-            'wheel_LF_Joint': 1.0,
-            'wheel_RR_Joint': 1.0,
-            'wheel_LR_Joint': 1.0,
+            'wheel_RF_Joint': 10.0,
+            'wheel_LF_Joint': 10.0,
+            'wheel_RR_Joint': 10.0,
+            'wheel_LR_Joint': 10.0,
 
             'roller_Joint': 0.0,
         }
@@ -185,7 +188,7 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
         class scales( LeggedRobotCfg.rewards.scales ):
             termination = -200.
             tracking_lin_vel = 1.0
-            tracking_ang_vel = 0.5
+            tracking_ang_vel = 0.6
             torques = -2.e-7
             dof_acc = -1.e-9
             # for flat ground

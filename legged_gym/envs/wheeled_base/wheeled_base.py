@@ -245,5 +245,5 @@ class WheeledBase(LeggedRobot):
         self.reset_buf |= self.time_out_buf
         # ============================= addeded ==============================
         base_posi_z = self.root_states[:, 2]
-        bot_fly = base_posi_z > 0.5
+        bot_fly = base_posi_z > 5.0
         self.reset_buf |= bot_fly
