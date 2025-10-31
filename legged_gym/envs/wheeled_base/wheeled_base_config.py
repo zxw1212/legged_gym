@@ -18,47 +18,47 @@ class WheeledBaseFlatCfg( LeggedRobotCfg ):
     #     measure_heights = False
     #     curriculum = False
 
-    # class terrain( LeggedRobotCfg.terrain):
-    #     # for train: 减小地形分辨率, 降低collision buffer压力；增加num_cols, terrain_width和border_size, 避免掉落地图边缘
-    #     mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
-    #     curriculum = True
-    #     horizontal_scale = 1.0 # [m]
-    #     vertical_scale = 0.05 # [m]
-    #     border_size = 100.0
-    #     static_friction = 1.0
-    #     dynamic_friction = 1.0
-    #     restitution = 0.
-    #     max_init_terrain_level = 1 # starting curriculum state
-    #     terrain_length = 20.
-    #     terrain_width = 20.
-    #     num_rows= 2 # number of terrain rows (levels)
-    #     num_cols = 10 # number of terrain cols (types)
-    #     # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
-    #     # terrain_proportions = [0.6, 0.4, 0.0, 0.0, 0.0]
-    #     terrain_proportions = [1.0, 0.0, 0.0, 0.0, 0.0]
-    #     # trimesh only:
-    #     slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
-    
     class terrain( LeggedRobotCfg.terrain):
-        # For play
+        # for train: 减小地形分辨率, 降低collision buffer压力；增加num_cols, terrain_width和border_size, 避免掉落地图边缘
         mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
         curriculum = True
-        horizontal_scale = 0.1 # [m]
-        vertical_scale = 0.005 # [m]
-        border_size = 10.0
+        horizontal_scale = 1.0 # [m]
+        vertical_scale = 0.05 # [m]
+        border_size = 100.0
         static_friction = 1.0
         dynamic_friction = 1.0
         restitution = 0.
         max_init_terrain_level = 1 # starting curriculum state
-        terrain_length = 8.
-        terrain_width = 8.
+        terrain_length = 20.
+        terrain_width = 20.
         num_rows= 2 # number of terrain rows (levels)
-        num_cols = 3 # number of terrain cols (types)
+        num_cols = 10 # number of terrain cols (types)
         # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
         # terrain_proportions = [0.6, 0.4, 0.0, 0.0, 0.0]
         terrain_proportions = [1.0, 0.0, 0.0, 0.0, 0.0]
         # trimesh only:
         slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
+    
+    # class terrain( LeggedRobotCfg.terrain):
+    #     # For play
+    #     mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
+    #     curriculum = True
+    #     horizontal_scale = 0.1 # [m]
+    #     vertical_scale = 0.005 # [m]
+    #     border_size = 10.0
+    #     static_friction = 1.0
+    #     dynamic_friction = 1.0
+    #     restitution = 0.
+    #     max_init_terrain_level = 1 # starting curriculum state
+    #     terrain_length = 8.
+    #     terrain_width = 8.
+    #     num_rows= 2 # number of terrain rows (levels)
+    #     num_cols = 3 # number of terrain cols (types)
+    #     # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
+    #     # terrain_proportions = [0.6, 0.4, 0.0, 0.0, 0.0]
+    #     terrain_proportions = [1.0, 0.0, 0.0, 0.0, 0.0]
+    #     # trimesh only:
+    #     slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
     
     class commands( LeggedRobotCfg.commands ):
         heading_command = True
