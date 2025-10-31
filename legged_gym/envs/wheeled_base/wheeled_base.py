@@ -187,6 +187,7 @@ class WheeledBase(LeggedRobot):
 
         self.obs_buf = torch.cat((  self.base_lin_vel * self.obs_scales.lin_vel, # 3
                                     self.base_ang_vel  * self.obs_scales.ang_vel, # 3
+                                    self.projected_gravity, # 3
                                     self.commands[:, :3] * self.commands_scale, # 3
                                     wheel_vel * self.obs_scales.dof_vel, # 4
                                     self.actions # 4
@@ -247,3 +248,44 @@ class WheeledBase(LeggedRobot):
         base_posi_z = self.root_states[:, 2]
         bot_fly = base_posi_z > 5.0
         self.reset_buf |= bot_fly
+
+        base_roll = get_euler_xyz(self.base_quat)[0] # roll [0, 2pi)
+        excessive_roll = (torch.abs(wrap_to_pi(base_roll)) > np.pi / 3)
+        self.reset_buf |= excessive_roll
+
+        base_pitch = get_euler_xyz(self.base_quat)[1] # pitch [0, 2pi)
+        excessive_pitch = (torch.abs(wrap_to_pi(base_pitch)) > np.pi / 3)
+        self.reset_buf |= excessive_pitch
+
+        # ============================= addeded ==============================
+
+    
+    def _reward_upturned_head_at_begining(self):
+        """
+        penalize upturned head at begining of episode(0.5 seconds)
+        """
+        begining_episode_length = np.ceil(0.5 / self.dt)
+        upturned_threshold = 10.0 / 180.0 * np.pi  # radians
+        base_quat = get_euler_xyz(self.base_quat)
+        base_pitch = base_quat[1]
+        upturned_pitch = (torch.abs(wrap_to_pi(base_pitch)) > upturned_threshold) * 1.0
+        base_roll = base_quat[0]
+        upturned_roll = (torch.abs(wrap_to_pi(base_roll)) > upturned_threshold) * 1.0
+        penalize = (self.episode_length_buf < begining_episode_length) * upturned_pitch
+        penalize += (self.episode_length_buf < begining_episode_length) * upturned_roll
+        return penalize
+    
+    def _reward_angle_vel_xy_at_begining(self):
+        """
+        penalize angle vel(xy) at begining of episode(0.5 seconds)
+        """
+        begining_episode_length = np.ceil(0.5 / self.dt)
+        penalize = (self.episode_length_buf < begining_episode_length) * torch.sum(torch.square(self.base_ang_vel[:, :2]).clip(max=1.0), dim=1)
+        return penalize
+    
+
+    def _teleport_robots(self, env_ids, cfg):
+        """ Teleports any robots that are too close to the edge to the other side
+        """
+        pass
+    # TODO: 掉落地图会导致value function变得不稳定

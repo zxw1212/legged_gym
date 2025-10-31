@@ -329,7 +329,8 @@ class LeggedRobot(BaseTask):
         if self.cfg.commands.heading_command:
             forward = quat_apply(self.base_quat, self.forward_vec)
             heading = torch.atan2(forward[:, 1], forward[:, 0])
-            self.commands[:, 2] = torch.clip(0.5*wrap_to_pi(self.commands[:, 3] - heading), -1., 1.)
+            # self.commands[:, 2] = torch.clip(0.5*wrap_to_pi(self.commands[:, 3] - heading), -1., 1.)
+            self.commands[:, 2] = torch.clip(1.0*wrap_to_pi(self.commands[:, 3] - heading), -1., 1.)
 
         if self.cfg.terrain.measure_heights:
             self.measured_heights = self._get_heights()
@@ -495,7 +496,7 @@ class LeggedRobot(BaseTask):
         self.root_states = gymtorch.wrap_tensor(actor_root_state)
         # 索引范围	数据含义
         # 0:3	位置 (x, y, z)
-        # 3:7	旋转 (四元数 w, x, y, z)
+        # 3:7	旋转 (四元数 x, y, z, w)
         # 7:10	线速度 (vx, vy, vz)
         # 10:13	角速度 (wx, wy, wz)
         

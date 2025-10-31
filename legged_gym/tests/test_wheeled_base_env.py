@@ -55,7 +55,7 @@ def test_env(args):
         # const actions for wheel bot to moveing test
         action_scale = env_cfg.control.action_scale
         # actions = (torch.tensor([[-20.0, 0.0, 0.0, 20.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
-        actions = (torch.tensor([[-10.0, 10.0, -10.0, 10.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
+        actions = (torch.tensor([[-20.0, 20.0, -20.0, 20.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
         # actions = (torch.tensor([[10.0, 10.0, 10.0, 10.0]], device=env.device) / action_scale).repeat(env.num_envs, 1) #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
         # actions = 0.*torch.ones(env.num_envs, env.num_actions, device=env.device)
         # actions = torch.randn(env.num_envs, env.num_actions, device=env.device) * 1000.0  #"wheel_RF_Joint", "wheel_LF_Joint", "wheel_RR_Joint", "wheel_LR_Joint",
